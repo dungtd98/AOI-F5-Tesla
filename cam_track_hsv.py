@@ -4,6 +4,9 @@ import numpy as np
 def nothing(evt):
     pass
 
+def zoom(img, zoom_factor=2):
+    return cv2.resize(img, None, fx=zoom_factor, fy=zoom_factor)
+
 def cvt_kel(kel):
     if kel%2==0:
         kel+=1
@@ -40,6 +43,8 @@ while 1:
     MAX = np.array([highH, highS, highV], dtype=np.uint8)  
     ret, frame = cap.read()
     frame = cv2.resize(frame, 800, 800)
+    roi = frame[200:400, 200:400].copy()
+    roi = zoom(roi, 8)
     hsv = cv2.cvtColor(frame, cv2.COLOR_BGR2HSV)
     mask = cv2.inRange(hsv, MIN, MAX)
 
@@ -51,6 +56,7 @@ while 1:
     mask = cv2.morphologyEx(mask, cv2.MORPH_CLOSE,(7,7))
 
     cv2.imshow(set_window, mask)
+    cv2.imshow("roi", roi)
     if key == 27:
         break
 
