@@ -42,7 +42,7 @@ while 1:
     MIN = np.array([lowH, lowS, lowV], dtype=np.uint8)
     MAX = np.array([highH, highS, highV], dtype=np.uint8)  
     ret, frame = cap.read()
-    frame = cv2.resize(frame, 800, 800)
+    frame = cv2.resize(frame, (800, 800))
     roi = frame[200:400, 200:400].copy()
     roi = zoom(roi, 8)
     hsv = cv2.cvtColor(frame, cv2.COLOR_BGR2HSV)
@@ -50,7 +50,7 @@ while 1:
 
     ker = cv2.getTrackbarPos('kel', set_window)
     ker = cvt_kel(ker)
-    kernel = cv2.ones(ker,ker)
+    kernel = np.ones((ker,ker),np.uint8)
 
     mask = cv2.dilate(mask, kernel, iterations=1)
     mask = cv2.morphologyEx(mask, cv2.MORPH_CLOSE,(7,7))
