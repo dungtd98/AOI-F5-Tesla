@@ -95,14 +95,17 @@ while 1:
         writeDM(300,0)
         if area_lim[1]>area>area_lim[0]:
             cv2.putText(roi, 'OK', (50,50), cv2.FONT_HERSHEY_COMPLEX, 2, (0,255,0), 2)
-            saveImg('/OK/', roi)
+            cv2.putText(frame, 'OK', (50,50), cv2.FONT_HERSHEY_COMPLEX, 2, (0,255,0), 2)
+            saveImg('/OK/', frame)
             writeDM(301,1)
         else:
            
             cv2.putText(roi, 'NG', (50,50), cv2.FONT_HERSHEY_COMPLEX, 2, (0,0,255), 2)
-            saveImg('/NG/', roi)
+            cv2.putText(frame, 'NG', (50,50), cv2.FONT_HERSHEY_COMPLEX, 2, (0,0,255), 2)
+            saveImg('/NG/', frame)
             writeDM(302,1)
         cv2.imshow('roi', roi)
+        cv2.imshow('mask', mask)
     if key == 27:
         break
 
