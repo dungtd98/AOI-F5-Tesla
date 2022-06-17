@@ -22,11 +22,15 @@ def writeDM(area, mess):
     soc.WriteMemory(FINS_TCP.FinsCommandCode().MEMORY_AREA_WRITE,
                     FINS_TCP.FinsPLCMemoryAreas().DATA_MEMORY_WORD, area, mess)
 
+def read_QRCode():
+    file = open('QR_code.txt','r')
+    data = file.read()
+    return data
+
 def saveImg(dir, frame):
-    now = datetime.now()
-    time = now.strftime("%H:%M:%S").replace(':', '-')
+    name_pic = read_QRCode()
     today = str(date.today()).replace('-','')
-    cv2.imwrite(r'./image/'+today+dir+ time +'.jpg', frame)
+    cv2.imwrite(r'./image/'+today+dir+ name_pic +'.jpg', frame)
 
 with open('setting.csv') as file_obj:
     reader_obj = csv.reader(file_obj)
@@ -48,10 +52,10 @@ with open('area.csv') as file_obj:
     for row in reader:
         area_lim = [int(i) for i in row]
 
-
-cap = cv2.VideoCapture(0, cv2.CAP_DSHOW)
-cap.set(3, 2592)
-cap.set(4, 1944)
+def write_results2csv(type, area):
+    with open("results.csv",'a') as outputFile:
+        writer = csv.writer(outputFile)
+        writer.writerow([type, area])
 
 def cropped_roi(point0, point1):
     (x1, y1) = point0
@@ -71,6 +75,12 @@ def cropped_roi(point0, point1):
 def zoom_roi(roi, scale):
     return cv2.resize(roi, None, fx=scale, fy=scale)
 kernel = np.ones((5,5), np.uint8)
+
+cap = cv2.VideoCapture(0, cv2.CAP_DSHOW)
+cap.set(3, 2592)
+cap.set(4, 1944)
+
+
 while 1:
     area = 0
     key = cv2.waitKey(1)&0xff
@@ -91,18 +101,21 @@ while 1:
     if key == ord('c'):
         print(area,w,h)
     if readDM(300)[-1] == 1:
-        print(area)
+        
         writeDM(300,0)
         if area_lim[1]>area>area_lim[0]:
             cv2.putText(roi, 'OK', (50,50), cv2.FONT_HERSHEY_COMPLEX, 2, (0,255,0), 2)
             cv2.putText(frame, 'OK', (50,50), cv2.FONT_HERSHEY_COMPLEX, 2, (0,255,0), 2)
             saveImg('/OK/', frame)
+            write_results2csv('OK', area)
+            print("OK__AREA: ",area)
             writeDM(301,1)
         else:
-           
             cv2.putText(roi, 'NG', (50,50), cv2.FONT_HERSHEY_COMPLEX, 2, (0,0,255), 2)
             cv2.putText(frame, 'NG', (50,50), cv2.FONT_HERSHEY_COMPLEX, 2, (0,0,255), 2)
             saveImg('/NG/', frame)
+            write_results2csv('NG', area)
+            print("NG__AREA: ",area)
             writeDM(302,1)
         cv2.imshow('roi', roi)
         cv2.imshow('mask', mask)

@@ -1,9 +1,5 @@
 # -*- mode: python ; coding: utf-8 -*-
-
-
 block_cipher = None
-
-
 a = Analysis(['AOI_F5_line01_checker.py'],
              pathex=[],
              binaries=[],
